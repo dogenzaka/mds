@@ -9,7 +9,7 @@ Is a library for managing multiple databases.
 # Features
 
 - [x] Another name on the can be managed as multiple databases.
-- [] Support database
+- Support database
   - [x] MongoDB
   - [ ] Redis
   - [ ] RethinkDB
