@@ -15,21 +15,28 @@ type (
 	}
 )
 
+var DATABASE string = "Mds_Test"
+var DATABASE_1 string = "Mds_Test1"
+
+var COLLECTION string = "people"
+
+
 func TestMongoDB(t *testing.T) {
 	ds := &MongoDB{
 		Use:  true,
-		Name: "GoTest",
+		Dn: "GoTest",
 		Type: MONGODB,
 		DialInfo: &mgo.DialInfo{
 			Addrs:    []string{"localhost"},
-			Database: "Mds_Test",
+			Database: DATABASE,
 		},
 	}
 
 	Convey("MongoDB operation", t, func() {
 
 		Convey("Connect()", func() {
-			session, err := ds.GetSession()
+			// default session
+			session, err := ds.GetSession(false)
 			So(session, ShouldEqual, nil)
 			So(err, ShouldNotEqual, nil)
 
@@ -42,40 +49,49 @@ func TestMongoDB(t *testing.T) {
 
 		})
 
+		Convey("GetDatabase() (default session)", func() {
+
+			db, err := ds.GetDataBase("", false)
+			So(db.Name, ShouldEqual, DATABASE)
+			So(err, ShouldEqual, nil)
+
+			db, err = ds.GetDataBase(DATABASE_1, false)
+			So(db.Name, ShouldEqual, DATABASE_1)
+			So(err, ShouldEqual, nil)
+
+		})
+
+		Convey("GetDatabase() (make session)", func() {
+
+			db, err := ds.GetDataBase("", true)
+			So(db.Name, ShouldEqual, DATABASE)
+			So(err, ShouldEqual, nil)
+			defer db.Session.Close()
+
+			db, err = ds.GetDataBase(DATABASE_1, true)
+			So(db.Name, ShouldEqual, DATABASE_1)
+			So(err, ShouldEqual, nil)
+			defer db.Session.Close()
+
+		})
+
+
 		Convey("GetCollection (default session)", func() {
-
 			// Original Session
-			col_default, err := ds.GetCollection("people")
-
-			So(col_default.Session, ShouldEqual, ds.Session)
+			col, err := ds.GetCollection(DATABASE, COLLECTION, false)
+			So(col.Session, ShouldEqual, ds.Session)
 			So(err, ShouldEqual, nil)
 		})
 
-		Convey("GetCollection (copy session)", func() {
-			// New Session
-			s, err := ds.CopySession()
+		Convey("GetCollection (make session)", func() {
+			// Original Session
+			col, err := ds.GetCollection(DATABASE, COLLECTION, true)
+			So(col.Session, ShouldNotEqual, ds.Session)
 			So(err, ShouldEqual, nil)
+			defer col.Session.Close()
 
-			var c *Collection
-
-			// error: may args
-			c, err = ds.GetCollection("people", &CollectionOption{
-				Session: s,
-			}, &CollectionOption{})
-
-			So(c, ShouldEqual, nil)
-			So(err, ShouldNotEqual, nil)
-
-			// success
-			c, err = ds.GetCollection("people", &CollectionOption{
-				Session: s,
-			})
-
-			So(c.Session, ShouldNotEqual, ds.Session)
-
-			c.Close()
-			So(c.Session, ShouldNotEqual, true)
 		})
+
 
 		Convey("Query", func() {
 
@@ -83,7 +99,7 @@ func TestMongoDB(t *testing.T) {
 			phone := "+55 53 8116 9639"
 
 			var err error
-			c, _ := ds.GetCollection("people")
+			c, _ := ds.GetCollection(DATABASE, COLLECTION, false)
 			err = c.Insert(&Person{
 				Name:  name,
 				Phone: phone,

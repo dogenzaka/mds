@@ -6,15 +6,16 @@ import (
 	"testing"
 )
 
-var DSName string = "First"
+var DnName string = "First"
+var Type string = "MongoDB"
 
 func pre() []map[string]interface{} {
 
 	datastores := []map[string]interface{}{
 		map[string]interface{}{
 			"Use":  true,
-			"Name": DSName,
-			"Type": "MongoDB",
+			"Dn": DnName,
+			"Type": Type,
 			"DialInfo": map[string]interface{}{
 				"Addrs":    []string{"localhost:27017"},
 				"Database": "MDS_TEST",
@@ -22,8 +23,8 @@ func pre() []map[string]interface{} {
 		},
 		map[string]interface{}{
 			"Use":  false,
-			"Name": "Second",
-			"Type": "MongoDB",
+			"Dn": "Second",
+			"Type": Type,
 		},
 	}
 
@@ -35,8 +36,8 @@ func preError() []map[string]interface{} {
 	datastores := []map[string]interface{}{
 		map[string]interface{}{
 			"Use":  true,
-			"Name": DSName,
-			"Type": "MongoDB",
+			"Dn": DnName,
+			"Type": Type,
 			"DialInfo": &mgo.DialInfo{
 				Addrs:    []string{"localhost:27017"},
 				Database: "MDS_TEST",
@@ -45,7 +46,7 @@ func preError() []map[string]interface{} {
 		map[string]interface{}{
 			"Use":  false,
 			"Name": "Second",
-			"Type": "MongoDB",
+			"Type": Type,
 		},
 	}
 
@@ -57,7 +58,7 @@ func TestMDS(t *testing.T) {
 	Convey("mds operation", t, func() {
 
 		Convey("String", func() {
-			So(mds.String(), ShouldNotEqual, "")
+			So(String(), ShouldNotEqual, "")
 		})
 
 		Convey("Setup", func() {
@@ -75,12 +76,12 @@ func TestMDS(t *testing.T) {
 		})
 
 		Convey("GetDatabase", func() {
-			ds, err := mds.GetDataStore(DSName)
+			ds, err := GetDataStore(DnName)
 
 			So(err, ShouldEqual, nil)
 			So(ds, ShouldNotEqual, nil)
 
-			ds, err = mds.GetDataStore("Error")
+			ds, err = GetDataStore("Error")
 
 			So(err, ShouldNotEqual, nil)
 			So(ds, ShouldEqual, nil)
@@ -88,12 +89,12 @@ func TestMDS(t *testing.T) {
 		})
 
 		Convey("GetDatabaseMongoDB", func() {
-			ds, err := mds.GetDataStoreMongoDB(DSName)
+			ds, err := GetDataStoreMongoDB(DnName)
 
 			So(err, ShouldEqual, nil)
 			So(ds, ShouldNotEqual, true)
 
-			ds, err = mds.GetDataStoreMongoDB("Error")
+			ds, err = GetDataStoreMongoDB("Error")
 
 			So(err, ShouldNotEqual, nil)
 			So(ds, ShouldEqual, nil)

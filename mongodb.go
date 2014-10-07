@@ -10,9 +10,8 @@ type (
 	// MongoDB
 	MongoDB struct {
 		Use  bool
-		Name string
+		Dn string
 		Type string
-		//Url string
 		DialInfo  *mgo.DialInfo
 		Session   *mgo.Session
 		Connected bool
@@ -24,10 +23,11 @@ type (
 		Session *mgo.Session
 	}
 
-	// Options for MongoDB#Collection
-	CollectionOption struct {
-		Session *mgo.Session
+	// get options
+	MongoDBOption struct {
+		Session bool
 		DbName  string
+		ColName string
 	}
 )
 
@@ -39,8 +39,8 @@ func (c *Collection) Close() {
 // MongoDB to string
 func (m *MongoDB) String() string {
 
-	return fmt.Sprintf("name=%s, type=%s, connected=%t, addr=%s, database=%s, session=%p",
-		m.Name,
+	return fmt.Sprintf("dn=%s, type=%s, connected=%t, addr=%s, database=%s, session=%p",
+		m.Dn,
 		m.Type,
 		m.Connected,
 		m.DialInfo.Addrs,
@@ -74,68 +74,56 @@ func (m *MongoDB) Connect() error {
 }
 
 // Get a session (Singleton)
-func (m *MongoDB) GetSession() (*mgo.Session, error) {
+func (m *MongoDB) GetSession(makeSession bool) (*mgo.Session, error) {
 	if !m.Connected {
 		return nil, errors.New("Do not establish a connection with MongoDB. Advance to the Connect() execution")
 	}
 
+	if makeSession {
+		s, err := m.CopySession()
+		return s, err
+	}
 	// singleton
 	return m.Session, nil
 }
 
 // Get a new session
 func (m *MongoDB) CopySession() (*mgo.Session, error) {
-	s, err := m.GetSession()
+	s, err := m.GetSession(false)
 	if err != nil {
 		return nil, err
 	}
 	// Copy(New) session
 	return s.Copy(), nil
+
 }
 
-// Get a collection
-func (m *MongoDB) GetCollection(colname string, any ...interface{}) (*Collection, error) {
-
-	var dbname string = ""
-	var session *mgo.Session = nil
-	var err error = nil
-
-	if 0 < len(any) {
-		option, ok := any[0].(*CollectionOption)
-
-		if ok == false {
-			return nil, errors.New("CollectionOption type assertion failed")
-		}
-
-		if option != nil {
-			dbname = option.DbName
-			session = option.Session
-		}
-
+// Get Database
+func (m *MongoDB) GetDataBase(dbname string, makeSession bool) (*mgo.Database, error) {
+	s, err := m.GetSession(makeSession)
+	if err != nil {
+		return nil, err
 	}
 
-	if 1 < len(any) {
-		msg := fmt.Sprintf("Many arguments. GetCollection(%s)", "1<any")
-		Debug("%s", msg)
-		return nil, errors.New(msg)
-	}
+	return s.DB(dbname), nil
+}
 
-	if session == nil { // Use original session
-		session, err = m.GetSession()
-		if err != nil {
-			return nil, err
-		}
+// Get Collection
+func (m *MongoDB) GetCollection(dbname string, colname string, makeSession bool) (*Collection, error){
+	s, err := m.GetSession(makeSession)
+	if err != nil {
+		return nil, err
 	}
 
 	// Get collection
-	c := session.DB(dbname).C(colname)
+	c := s.DB(dbname).C(colname)
 
 	// wrap
 	collection := &Collection{
 		c,
-		session,
+		s,
 	}
 
 	return collection, nil
-
 }
+

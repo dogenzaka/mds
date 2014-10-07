@@ -1,10 +1,10 @@
 package mds
 
 import (
-	"errors"
 	"fmt"
-	"github.com/mitchellh/mapstructure"
+	"errors"
 	"strings"
+	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -28,8 +28,8 @@ type (
 )
 
 // mds to string
-func (e *Mds) String() string {
-	return fmt.Sprintf("Version: %s, DataStores Count:%d", e.Version, e.DataStores)
+func String() string {
+	return fmt.Sprintf("Version: %s, DataStores Count:%d", mds.Version, len(mds.DataStores))
 }
 
 // Debug flag
@@ -50,15 +50,15 @@ var mds *Mds = &Mds{
 }
 
 // Add a datastore
-func (e *Mds) AddDataStore(name string, value interface{}) interface{} {
-	e.DataStores[name] = value
-	Debug("Add the datastore. name=%s\n", name)
+func AddDataStore(dn string, value interface{}) interface{} {
+	mds.DataStores[dn] = value
+	Debug("Add the datastore. dn=%s\n", dn)
 	return value
 }
 
 // Get a datastore
-func (e *Mds) GetDataStore(name string) (interface{}, error) {
-	ds := e.DataStores[name]
+func GetDataStore(dn string) (interface{}, error) {
+	ds := mds.DataStores[dn]
 
 	if ds == nil {
 		return nil, errors.New("Datastore not found")
@@ -68,8 +68,8 @@ func (e *Mds) GetDataStore(name string) (interface{}, error) {
 }
 
 // Get the Mongodb datastore
-func (e *Mds) GetDataStoreMongoDB(name string) (*MongoDB, error) {
-	ds, err := e.GetDataStore(name)
+func GetDataStoreMongoDB(dn string) (*MongoDB, error) {
+	ds, err := GetDataStore(dn)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,8 @@ func (e *Mds) GetDataStoreMongoDB(name string) (*MongoDB, error) {
 }
 
 // mds setup (Once)
-func Setup(dss []map[string]interface{}) error {
+func Setup(dss []map[string]interface{}) (error) {
+
 	if mds.Setuped {
 		return errors.New("Already setup performed")
 	}
@@ -90,7 +91,7 @@ func Setup(dss []map[string]interface{}) error {
 	for _, ds := range dss {
 
 		if !ds["Use"].(bool) {
-			Debug("Skip the datastore. name=%s\n", ds["Name"].(string))
+			Debug("Skip the datastore. dn=%s\n", ds["Dn"].(string))
 			continue
 		}
 
@@ -102,7 +103,7 @@ func Setup(dss []map[string]interface{}) error {
 			if err != nil {
 				return err
 			}
-			mds.AddDataStore(mongodb.Name, mongodb)
+			AddDataStore(mongodb.Dn, mongodb)
 		}
 	}
 

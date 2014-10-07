@@ -28,3 +28,4 @@ _vendor
 
 # JetBrains
 .idea
+*.iml

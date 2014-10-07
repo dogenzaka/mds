@@ -1,14 +1,19 @@
 __go=$(shell which go)
-__goconver=$(shell which goconver)
+__goconvey=$(shell which goconvey)
 
 __PROG_NAME=mds
 __PROG=$(__PROG_NAME).go
 
-__GOPATH=$(shell pwd)
+__pwd=$(shell pwd)
+__GOPATH=$$GOPATH:$(__pwd)/_vendor:$(__pwd)
 
+init:
+	gom install
 
 test:
-	$(__go) test
+	GOPATH=$(__GOPATH) $(__go) test
 
+cover:
+	GOPATH=$(__GOPATH) $(__goconvey)
 
 .PHONY: test

@@ -1,0 +1,2 @@
+gom 'gopkg.in/mgo.v2'
+gom 'github.com/mitchellh/mapstructure'
