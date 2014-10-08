@@ -1,4 +1,4 @@
-mdsgo During the development :)
+mds During the development :)
 =====
 
 # What is mds?
@@ -28,7 +28,7 @@ Is a library for managing multiple databases.
 # Getting started
 
 ```sh
-$ go get github.com/liverpool-music/mdsgo
+$ go get github.com/dogenzaka/mds
 ```
 
 
