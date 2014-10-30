@@ -36,6 +36,21 @@ $ go get github.com/dogenzaka/mds
 
 Please read the test code.
 
+# Developer
+
+## Started
+
+```sh
+$ make init-test
+```
+
+## Test
+
+```sh
+$ make test
+or
+$ make cover
+```
 
 # License
 

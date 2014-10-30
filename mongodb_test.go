@@ -4,6 +4,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 
+	"encoding/json"
+	"fmt"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -13,18 +15,41 @@ type (
 		Name  string
 		Phone string
 	}
+	PersonModel struct {
+		*Collection
+		Name  string        `json:"name"`
+		Phone string        `json:"phone"`
+		ID    bson.ObjectId `json:"_id" bson:"_id"`
+	}
 )
+
+func (p *PersonModel) One() {
+	defer p.Close()
+	name := "Ale"
+	p.Find(bson.M{"name": name}).One(&p)
+
+}
+
+func NewPersonalModel(c *Collection) *PersonModel {
+	model := &PersonModel{
+		&Collection{c.Collection, c.Session},
+		"",
+		"",
+		bson.NewObjectId(),
+	}
+
+	return model
+}
 
 var DATABASE string = "Mds_Test"
 var DATABASE_1 string = "Mds_Test1"
 
 var COLLECTION string = "people"
 
-
 func TestMongoDB(t *testing.T) {
 	ds := &MongoDB{
 		Use:  true,
-		Dn: "GoTest",
+		Dn:   "GoTest",
 		Type: MONGODB,
 		DialInfo: &mgo.DialInfo{
 			Addrs:    []string{"localhost"},
@@ -75,23 +100,21 @@ func TestMongoDB(t *testing.T) {
 
 		})
 
-
 		Convey("GetCollection (default session)", func() {
 			// Original Session
-			col, err := ds.GetCollection(DATABASE, COLLECTION, false)
+			col, err := ds.GetCollection(COLLECTION, false)
 			So(col.Session, ShouldEqual, ds.Session)
 			So(err, ShouldEqual, nil)
 		})
 
 		Convey("GetCollection (make session)", func() {
 			// Original Session
-			col, err := ds.GetCollection(DATABASE, COLLECTION, true)
+			col, err := ds.GetCollection(COLLECTION, true)
 			So(col.Session, ShouldNotEqual, ds.Session)
 			So(err, ShouldEqual, nil)
 			defer col.Session.Close()
 
 		})
-
 
 		Convey("Query", func() {
 
@@ -99,7 +122,7 @@ func TestMongoDB(t *testing.T) {
 			phone := "+55 53 8116 9639"
 
 			var err error
-			c, _ := ds.GetCollection(DATABASE, COLLECTION, false)
+			c, _ := ds.GetCollection(COLLECTION, false)
 			err = c.Insert(&Person{
 				Name:  name,
 				Phone: phone,
@@ -117,6 +140,20 @@ func TestMongoDB(t *testing.T) {
 			So(result.Phone, ShouldEqual, phone)
 
 		})
+
+		Convey("Model", func() {
+			c, _ := ds.GetCollection(COLLECTION, false)
+			model := NewPersonalModel(c)
+
+			model.One()
+
+			//err := model.Find(bson.M{"name": name}).One(&model)
+			d, err := json.Marshal(model)
+			//fmt.Println("aaaa ", string(d[:]), err)
+			So(string(d[:]), ShouldEqual, "{\"name\":\"Ale\",\"phone\":\"+55 53 8116 9639\",\"_id\":\"542cf7131f06eb4eb5ab5d68\"}")
+
+		})
+
 		Convey("MongoDB.String()", func() {
 			So(ds.String(), ShouldNotEqual, "")
 		})

@@ -9,9 +9,9 @@ import (
 type (
 	// MongoDB
 	MongoDB struct {
-		Use  bool
-		Dn string
-		Type string
+		Use       bool
+		Dn        string
+		Type      string
 		DialInfo  *mgo.DialInfo
 		Session   *mgo.Session
 		Connected bool
@@ -20,7 +20,7 @@ type (
 	// Mongodb#Collection
 	Collection struct {
 		*mgo.Collection
-		Session *mgo.Session
+		Session *mgo.Session `json:"-" bson:"-"`
 	}
 
 	// get options
@@ -109,14 +109,14 @@ func (m *MongoDB) GetDataBase(dbname string, makeSession bool) (*mgo.Database, e
 }
 
 // Get Collection
-func (m *MongoDB) GetCollection(dbname string, colname string, makeSession bool) (*Collection, error){
+func (m *MongoDB) GetCollection(colname string, makeSession bool) (*Collection, error) {
 	s, err := m.GetSession(makeSession)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get collection
-	c := s.DB(dbname).C(colname)
+	c := s.DB(m.DialInfo.Database).C(colname)
 
 	// wrap
 	collection := &Collection{
@@ -126,4 +126,3 @@ func (m *MongoDB) GetCollection(dbname string, colname string, makeSession bool)
 
 	return collection, nil
 }
-

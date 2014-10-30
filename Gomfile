@@ -1,2 +1,8 @@
 gom 'gopkg.in/mgo.v2'
 gom 'github.com/mitchellh/mapstructure'
+
+# test deps
+group :test do
+    gom 'github.com/smartystreets/goconvey'
+    gom 'code.google.com/p/go.tools/cmd/cover'
+end
