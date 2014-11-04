@@ -75,6 +75,11 @@ func TestMDS(t *testing.T) {
 			So(err, ShouldNotEqual, nil)
 		})
 
+		Convey("Get", func() {
+			mds := Get()
+			So(mds.Setuped, ShouldBeTrue)
+		})
+
 		Convey("GetDatabase", func() {
 			ds, err := GetDataStore(DnName)
 

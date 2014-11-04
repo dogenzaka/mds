@@ -49,6 +49,11 @@ var mds *Mds = &Mds{
 	Setuped:    false,
 }
 
+// Mds info
+func Get() *Mds {
+	return mds
+}
+
 // Add a datastore
 func AddDataStore(dn string, value interface{}) interface{} {
 	mds.DataStores[dn] = value
