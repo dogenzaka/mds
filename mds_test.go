@@ -14,7 +14,7 @@ func pre() []map[string]interface{} {
 	datastores := []map[string]interface{}{
 		map[string]interface{}{
 			"Use":  true,
-			"Dn": DnName,
+			"Dn":   DnName,
 			"Type": Type,
 			"DialInfo": map[string]interface{}{
 				"Addrs":    []string{"localhost:27017"},
@@ -23,7 +23,7 @@ func pre() []map[string]interface{} {
 		},
 		map[string]interface{}{
 			"Use":  false,
-			"Dn": "Second",
+			"Dn":   "Second",
 			"Type": Type,
 		},
 	}
@@ -36,7 +36,7 @@ func preError() []map[string]interface{} {
 	datastores := []map[string]interface{}{
 		map[string]interface{}{
 			"Use":  true,
-			"Dn": DnName,
+			"Dn":   DnName,
 			"Type": Type,
 			"DialInfo": &mgo.DialInfo{
 				Addrs:    []string{"localhost:27017"},
@@ -63,15 +63,15 @@ func TestMDS(t *testing.T) {
 
 		Convey("Setup", func() {
 			// Error
-			err := Setup(preError())
+			err := Setup(preError(), false)
 			So(err, ShouldNotEqual, nil)
 
 			// Success
-			err = Setup(pre())
+			err = Setup(pre(), true)
 			So(err, ShouldEqual, nil)
 
 			// Error
-			err = Setup(pre())
+			err = Setup(pre(), false)
 			So(err, ShouldNotEqual, nil)
 		})
 

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"encoding/json"
-	"fmt"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -142,14 +141,16 @@ func TestMongoDB(t *testing.T) {
 		})
 
 		Convey("Model", func() {
-			c, _ := ds.GetCollection(COLLECTION, false)
+			c, _ := ds.GetCollection(COLLECTION, true)
 			model := NewPersonalModel(c)
 
 			model.One()
 
 			//err := model.Find(bson.M{"name": name}).One(&model)
 			d, err := json.Marshal(model)
-			//fmt.Println("aaaa ", string(d[:]), err)
+			So(err, ShouldBeNil)
+			//fmt.Println("....", string(d[:]), err)
+
 			So(string(d[:]), ShouldEqual, "{\"name\":\"Ale\",\"phone\":\"+55 53 8116 9639\",\"_id\":\"542cf7131f06eb4eb5ab5d68\"}")
 
 		})

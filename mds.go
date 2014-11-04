@@ -1,10 +1,10 @@
 package mds
 
 import (
-	"fmt"
 	"errors"
-	"strings"
+	"fmt"
 	"github.com/mitchellh/mapstructure"
+	"strings"
 )
 
 const (
@@ -82,7 +82,8 @@ func GetDataStoreMongoDB(dn string) (*MongoDB, error) {
 }
 
 // mds setup (Once)
-func Setup(dss []map[string]interface{}) (error) {
+// connected: セットアップと同時にコネクティングする
+func Setup(dss []map[string]interface{}, autoconnected bool) error {
 
 	if mds.Setuped {
 		return errors.New("Already setup performed")
@@ -100,9 +101,19 @@ func Setup(dss []map[string]interface{}) (error) {
 			mongodb := &MongoDB{}
 
 			err := mapstructure.Decode(ds, mongodb)
+
 			if err != nil {
 				return err
 			}
+
+			if autoconnected == true {
+				Debug("auto-connecting dn=%s\n", ds["Dn"].(string))
+				err := mongodb.Connect()
+				if err != nil {
+					return err
+				}
+			}
+
 			AddDataStore(mongodb.Dn, mongodb)
 		}
 	}
