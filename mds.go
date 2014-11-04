@@ -82,8 +82,8 @@ func GetDataStoreMongoDB(dn string) (*MongoDB, error) {
 }
 
 // mds setup (Once)
-// connected: セットアップと同時にコネクティングする
-func Setup(dss []map[string]interface{}, autoconnected bool) error {
+// autoconnect: connect automatically
+func Setup(dss []map[string]interface{}, autoconnect bool) error {
 
 	if mds.Setuped {
 		return errors.New("Already setup performed")
@@ -106,7 +106,7 @@ func Setup(dss []map[string]interface{}, autoconnected bool) error {
 				return err
 			}
 
-			if autoconnected == true {
+			if autoconnect == true {
 				Debug("auto-connecting dn=%s\n", ds["Dn"].(string))
 				err := mongodb.Connect()
 				if err != nil {
