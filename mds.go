@@ -38,7 +38,7 @@ var DEBUG = false
 // Debug output
 func Debug(f string, msgs ...string) {
 	if DEBUG {
-		fmt.Printf(""+f+"\n", strings.Join(([]string)(msgs), " "))
+		fmt.Printf(""+f, strings.Join(([]string)(msgs), " "))
 	}
 }
 
