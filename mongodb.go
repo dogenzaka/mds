@@ -134,10 +134,10 @@ func (m *MongoDB) GetCollection(colname string, makeSession bool) (*Collection, 
 func (m *MongoDB) GetCollectionWithoutErr(colname string, makeSession bool, exit bool) *Collection {
 	c, err := m.GetCollection(colname, makeSession)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		if exit {
 			panic(err.Error())
 		}
+		fmt.Fprintln(os.Stderr, err)
 		return nil
 	}
 	return c
