@@ -3,6 +3,8 @@ package mds
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	mgo "gopkg.in/mgo.v2"
 )
 
@@ -125,4 +127,18 @@ func (m *MongoDB) GetCollection(colname string, makeSession bool) (*Collection, 
 	}
 
 	return collection, nil
+}
+
+// Get Collection without any errors
+// if exit == true, shutdown this application immediatry.
+func (m *MongoDB) GetCollectionWithoutErr(colname string, makeSession bool, exit bool) *Collection {
+	c, err := m.GetCollection(colname, makeSession)
+	if err != nil {
+		if exit {
+			panic(err.Error())
+		}
+		fmt.Fprintln(os.Stderr, err)
+		return nil
+	}
+	return c
 }

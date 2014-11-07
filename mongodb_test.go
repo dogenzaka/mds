@@ -115,6 +115,32 @@ func TestMongoDB(t *testing.T) {
 
 		})
 
+		Convey("GetCollectionWithoutErr (default session, not exit)", func() {
+			// Original Session
+			col := ds.GetCollectionWithoutErr(COLLECTION, false, false)
+			So(col.Session, ShouldEqual, ds.Session)
+		})
+
+		Convey("GetCollectionWithoutErr (make session, not exit)", func() {
+			// Original Session
+			col := ds.GetCollectionWithoutErr(COLLECTION, true, false)
+			So(col.Session, ShouldNotEqual, ds.Session)
+			defer col.Session.Close()
+		})
+
+		Convey("GetCollectionWithoutErr (default session, exit)", func() {
+			// Original Session
+			col := ds.GetCollectionWithoutErr(COLLECTION, false, true)
+			So(col.Session, ShouldEqual, ds.Session)
+		})
+
+		Convey("GetCollectionWithoutErr (make session, exit)", func() {
+			// Original Session
+			col := ds.GetCollectionWithoutErr(COLLECTION, true, true)
+			So(col.Session, ShouldNotEqual, ds.Session)
+			defer col.Session.Close()
+		})
+
 		Convey("Query", func() {
 
 			name := "Ale"
