@@ -32,7 +32,6 @@ func (p *PersonModel) One() {
 func NewPersonalModel(c *Collection) *PersonModel {
 	model := &PersonModel{
 		&Collection{c.Collection, c.Session},
-
 		"",
 		"",
 		bson.NewObjectId(),

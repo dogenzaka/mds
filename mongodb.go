@@ -136,8 +136,7 @@ func (m *MongoDB) GetCollectionWithoutErr(colname string, makeSession bool, exit
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		if exit {
-			os.Exit(1)
-			return nil
+			panic(err.Error())
 		}
 		return nil
 	}
