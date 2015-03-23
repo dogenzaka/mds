@@ -1,0 +1,20 @@
+language: go
+
+go:
+ - 1.4.2
+
+before_install:
+ - sudo pip install codecov
+
+install:
+ - go get golang.org/x/tools/cmd/cover
+ - go get github.com/smartystreets/goconvey
+ - go get github.com/smartystreets/assertions
+ - go get github.com/mitchellh/mapstructure
+ - go get gopkg.in/mgo.v2
+
+script:
+ - go test -v -coverprofile=coverage.txt -covermode=count
+
+after_success:
+ - codecov
