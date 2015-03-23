@@ -1,10 +1,11 @@
+
 mds During the development :)
 =====
 
-# What is mds?
+[![Build Status](https://travis-ci.org/dogenzaka/mds.svg?branch=master)](https://travis-ci.org/dogenzaka/mds)
+[![codecov.io](https://codecov.io/github/dogenzaka/mds/coverage.svg?branch=master)](https://codecov.io/github/dogenzaka/mds?branch=master)
 
-Is a library for managing multiple databases.
-
+msd is a library for managing multiple databases.
 
 # Features
 
