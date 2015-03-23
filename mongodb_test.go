@@ -1,10 +1,12 @@
 package mds
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"encoding/json"
+
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -171,14 +173,10 @@ func TestMongoDB(t *testing.T) {
 			model := NewPersonalModel(c)
 
 			model.One()
+			So(model.Phone, ShouldEqual, "+55 53 8116 9639")
 
-			//err := model.Find(bson.M{"name": name}).One(&model)
-			d, err := json.Marshal(model)
+			_, err := json.Marshal(model)
 			So(err, ShouldBeNil)
-			//fmt.Println("....", string(d[:]), err)
-
-			So(string(d[:]), ShouldEqual, "{\"name\":\"Ale\",\"phone\":\"+55 53 8116 9639\",\"_id\":\"542cf7131f06eb4eb5ab5d68\"}")
-
 		})
 
 		Convey("MongoDB.String()", func() {
